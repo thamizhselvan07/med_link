@@ -30,7 +30,7 @@ const EmergencyPage = () => {
     const handleCallNurse = async () => {
         setLoading(true);
         try {
-            const response = await fetch('http://localhost:5000/api/emergency/call-nurse', {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/emergency/call-nurse`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -56,7 +56,7 @@ const EmergencyPage = () => {
     const handleCallAmbulance = async () => {
         setLoading(true);
         try {
-            const response = await fetch('http://localhost:5000/api/emergency/call-ambulance', {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/emergency/call-ambulance`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -87,7 +87,7 @@ const EmergencyPage = () => {
         setSosSteps([...updatedSteps]);
 
         try {
-            const response = await fetch('http://localhost:5000/api/emergency/broadcast-sos', {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/emergency/broadcast-sos`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -125,7 +125,7 @@ const EmergencyPage = () => {
     const handleTriageMode = async () => {
         setLoading(true);
         try {
-            const response = await fetch('http://localhost:5000/api/emergency/triage', {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/emergency/triage`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

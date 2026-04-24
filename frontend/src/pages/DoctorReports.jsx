@@ -13,7 +13,7 @@ const DoctorReports = () => {
 
     const fetchReports = async () => {
         try {
-            const res = await axios.get('http://localhost:5000/api/doctor/reports');
+            const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/doctor/reports`);
             if (res.data.success) {
                 setReports(res.data.reports);
             }

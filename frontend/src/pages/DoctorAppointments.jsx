@@ -27,7 +27,7 @@ const DoctorAppointments = () => {
 
     const fetchBuckets = async () => {
         try {
-            const res = await axios.get(`http://localhost:5000/api/doctor/appointments?doctor_id=${doctorId}`);
+            const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/doctor/appointments?doctor_id=${doctorId}`);
             if (res.data.success) {
                 setBuckets({
                     pending: res.data.pending,
@@ -45,7 +45,7 @@ const DoctorAppointments = () => {
 
     const handleAccept = async (id) => {
         try {
-            await axios.post('http://localhost:5000/api/doctor/requests/accept', { appointment_id: id });
+            await axios.post(`${import.meta.env.VITE_API_URL}/api/doctor/requests/accept`, { appointment_id: id });
             refreshAll();
             alert("Appointment Confirmed");
         } catch (error) {
@@ -56,7 +56,7 @@ const DoctorAppointments = () => {
     const handleDecline = async (id) => {
         if (!window.confirm("Decline this appointment request?")) return;
         try {
-            await axios.post('http://localhost:5000/api/doctor/requests/reject', { appointment_id: id });
+            await axios.post(`${import.meta.env.VITE_API_URL}/api/doctor/requests/reject`, { appointment_id: id });
             refreshAll();
         } catch (error) {
             alert("Error declining appointment");
@@ -66,7 +66,7 @@ const DoctorAppointments = () => {
     const handleComplete = async (id, doctorId) => {
         if (!window.confirm("Mark appointment as completed?")) return;
         try {
-            await axios.post('http://localhost:5000/api/doctor/appointments/complete', { appointment_id: id, doctor_id: doctorId });
+            await axios.post(`${import.meta.env.VITE_API_URL}/api/doctor/appointments/complete`, { appointment_id: id, doctor_id: doctorId });
             refreshAll();
         } catch (error) {
             alert("Error completing appointment");

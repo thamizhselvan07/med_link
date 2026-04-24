@@ -29,7 +29,7 @@ const DoctorDashboard = () => {
 
     const fetchDashboard = async () => {
         try {
-            const res = await axios.get(`http://localhost:5000/api/doctor/dashboard?doctor_id=${doctorId}`);
+            const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/doctor/dashboard?doctor_id=${doctorId}`);
             if (res.data.success) {
                 setStats(res.data.stats);
                 setNextAppointment(res.data.next_appointment);

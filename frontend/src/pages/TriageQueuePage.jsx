@@ -33,7 +33,7 @@ const TriageQueuePage = () => {
 
     const fetchQueue = async () => {
         try {
-            const res = await axios.get('http://localhost:5000/triage/queue');
+            const res = await axios.get(`${import.meta.env.VITE_API_URL}/triage/queue`);
             setQueue(res.data);
         } catch (error) {
             console.error('Error fetching queue:', error);
@@ -44,7 +44,7 @@ const TriageQueuePage = () => {
 
     const fetchDoctors = async () => {
         try {
-            const res = await axios.get('http://localhost:5000/booking/doctors');
+            const res = await axios.get(`${import.meta.env.VITE_API_URL}/booking/doctors`);
             setDoctors(res.data);
         } catch (error) {
             console.error('Error fetching doctors:', error);
@@ -59,7 +59,7 @@ const TriageQueuePage = () => {
 
         setBooking(true);
         try {
-            const res = await axios.post('http://localhost:5000/booking/book', {
+            const res = await axios.post(`${import.meta.env.VITE_API_URL}/booking/book`, {
                 patient_id: selectedPatient.patient_id,
                 doctor_id: selectedDoctor.id
             });
@@ -82,7 +82,7 @@ const TriageQueuePage = () => {
         const doctorId = localStorage.getItem('doctor_id') || user?.name || 'D1';
 
         try {
-            const res = await axios.post('http://localhost:5000/api/triage/assign', {
+            const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/triage/assign`, {
                 patient_id: patient.id || patient.patient_id,
                 doctor_id: doctorId
             });

@@ -36,7 +36,7 @@ const DoctorSchedule = () => {
 
     const fetchSchedule = async () => {
         try {
-            const res = await axios.get(`http://localhost:5000/api/doctor/schedule?doctor_id=${doctorId}&date=${selectedDate}`);
+            const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/doctor/schedule?doctor_id=${doctorId}&date=${selectedDate}`);
             if (res.data.success) {
                 setScheduleItems(res.data.items);
             }
@@ -49,7 +49,7 @@ const DoctorSchedule = () => {
 
     const fetchWeekSummary = async () => {
         try {
-            const res = await axios.get(`http://localhost:5000/api/doctor/schedule/week?doctor_id=${doctorId}&weekStart=${currentWeekStart}`);
+            const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/doctor/schedule/week?doctor_id=${doctorId}&weekStart=${currentWeekStart}`);
             if (res.data.success) {
                 setWeekSummary(res.data.days);
             }
@@ -61,7 +61,7 @@ const DoctorSchedule = () => {
     const handleComplete = async (id) => {
         if (!window.confirm("Mark appointment as completed?")) return;
         try {
-            await axios.post('http://localhost:5000/api/doctor/appointments/complete', { appointment_id: id, doctor_id: doctorId });
+            await axios.post(`${import.meta.env.VITE_API_URL}/api/doctor/appointments/complete`, { appointment_id: id, doctor_id: doctorId });
             fetchSchedule();
             fetchWeekSummary();
         } catch (error) {

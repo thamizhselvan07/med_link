@@ -33,7 +33,7 @@ const DoctorsList = () => {
             const slotISO = slot.toISOString();
             console.log("Booking Slot (Frontend):", slotISO);
 
-            const API_BASE = "http://localhost:5000";
+            const API_BASE = `${import.meta.env.VITE_API_URL}`;
             const res = await axios.post(`${API_BASE}/api/appointments/book`, {
                 patient_id: user?.id || 'P001',
                 doctor_id: doc.id,
