@@ -1,32 +1,52 @@
-import React, { useState } from 'react';
-import { Mic, MicOff, Play, Square, Save } from 'lucide-react';
+import React, { useRef, useState } from 'react';
+import { Mic, MicOff, Save } from 'lucide-react';
 
 const VoiceAssistant = ({ onTranscript, lang = 'en-US' }) => {
     const [isListening, setIsListening] = useState(false);
     const [transcript, setTranscript] = useState('');
+    const recognitionRef = useRef(null);
 
     const startListening = () => {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (!SpeechRecognition) {
-            alert("Your browser does not support voice recognition.");
+            alert("Your browser does not support voice recognition. Please type your symptoms in the box below.");
             return;
+        }
+
+        if (recognitionRef.current) {
+            recognitionRef.current.stop();
         }
 
         const recognition = new SpeechRecognition();
         recognition.lang = lang;
         recognition.interimResults = true;
-        recognition.start();
+        recognition.continuous = false;
+        recognitionRef.current = recognition;
+
+        let collected = '';
 
         recognition.onstart = () => setIsListening(true);
         recognition.onresult = (event) => {
-            const current = event.resultIndex;
-            const text = event.results[current][0].transcript;
+            let text = '';
+            for (let i = event.resultIndex; i < event.results.length; i++) {
+                text += event.results[i][0].transcript;
+            }
+            collected = text;
             setTranscript(text);
+        };
+        recognition.onerror = () => {
+            setIsListening(false);
         };
         recognition.onend = () => {
             setIsListening(false);
-            if (transcript) onTranscript(transcript);
+            if (collected || transcript) {
+                const finalText = collected || transcript;
+                setTranscript(finalText);
+                onTranscript(finalText);
+            }
         };
+
+        recognition.start();
     };
 
     return (
@@ -44,9 +64,16 @@ const VoiceAssistant = ({ onTranscript, lang = 'en-US' }) => {
                 <h3 className="text-2xl font-bold text-slate-800 mb-2">
                     {isListening ? "Listening..." : "Tap to Speak"}
                 </h3>
-                <p className="text-slate-500 italic">
+                <p className="text-slate-500 italic mb-3">
                     {transcript || "Please describe how you are feeling."}
                 </p>
+                <textarea
+                    className="w-full max-w-xl mx-auto p-4 rounded-2xl bg-white border border-blue-100 text-slate-700 text-sm"
+                    rows={3}
+                    placeholder="If the mic is unavailable or inaccurate, you can also type your symptoms here."
+                    value={transcript}
+                    onChange={(e) => setTranscript(e.target.value)}
+                />
             </div>
 
             {transcript && !isListening && (

@@ -1,5 +1,20 @@
 [
   {
+    "id": "NTF1771654569032_724",
+    "created_at": "2026-02-21T06:16:09.032Z",
+    "read": false,
+    "target_role": "doctor",
+    "target_id": "D1",
+    "type": "appointment_request",
+    "title": "New Appointment Request",
+    "message": "New appointment request received for 25/2/2026, 2:00:00 pm.",
+    "meta": {
+      "appointment_id": "APT1771654569019",
+      "slot_time": "2026-02-25T08:30:00.000Z",
+      "patient_id": "P001"
+    }
+  },
+  {
     "id": "NTF1771119675243_511",
     "created_at": "2026-02-15T01:41:15.243Z",
     "read": false,

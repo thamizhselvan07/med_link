@@ -4,6 +4,8 @@ import { usePatient } from '../../contexts/PatientContext';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { ProgressBar, CustomCheckbox, StepTitle } from '../../components/patient/WizardUI';
 import VoiceAssistant from '../../components/patient/VoiceAssistant';
+import { COMMON_SYMPTOMS } from '../../data/symptoms';
+import { COMMON_DISEASES } from '../../data/diseases';
 import {
     User, Calendar, Smartphone, ChevronLeft, ChevronRight,
     Thermometer, Heart, Activity, Droplets, HeartPulse,
@@ -15,6 +17,8 @@ const IntakeForm = () => {
     const { t } = useLanguage();
     const navigate = useNavigate();
     const [currentStep, setCurrentStep] = useState(1);
+    const [symptomSearch, setSymptomSearch] = useState('');
+    const [diseaseSearch, setDiseaseSearch] = useState('');
     const totalSteps = 6;
 
     const nextStep = () => currentStep < totalSteps ? setCurrentStep(c => c + 1) : navigate('/patient/review');
@@ -99,14 +103,54 @@ const IntakeForm = () => {
                         {currentStep === 3 && (
                             <div className="space-y-8 animate-in fade-in duration-300">
                                 <StepTitle title={t('symptom_checklist_title')} subtitle={t('symptom_checklist_subtitle')} />
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                    <CustomCheckbox label={t('chest_pain')} checked={patientData.symptom_chest_pain} onChange={(v) => updatePatientData({ symptom_chest_pain: v })} icon={HeartPulse} />
-                                    <CustomCheckbox label={t('fever')} checked={patientData.symptom_fever} onChange={(v) => updatePatientData({ symptom_fever: v })} icon={Thermometer} />
-                                    <CustomCheckbox label={t('breathing_difficulty')} checked={patientData.symptom_breathing_difficulty} onChange={(v) => updatePatientData({ symptom_breathing_difficulty: v })} icon={Activity} />
-                                    <CustomCheckbox label={t('cough')} checked={patientData.symptom_cough} onChange={(v) => updatePatientData({ symptom_cough: v })} icon={Info} />
-                                    <CustomCheckbox label={t('headache')} checked={patientData.symptom_headache} onChange={(v) => updatePatientData({ symptom_headache: v })} icon={Activity} />
-                                    <CustomCheckbox label={t('dizziness')} checked={patientData.symptom_dizziness} onChange={(v) => updatePatientData({ symptom_dizziness: v })} icon={Activity} />
-                                    <CustomCheckbox label={t('vomiting')} checked={patientData.symptom_vomiting} onChange={(v) => updatePatientData({ symptom_vomiting: v })} icon={Info} />
+
+                                <div className="space-y-4">
+                                    <input
+                                        type="text"
+                                        value={symptomSearch}
+                                        onChange={(e) => setSymptomSearch(e.target.value)}
+                                        className="w-full text-base md:text-lg p-4 rounded-2xl bg-slate-50 border-2 border-transparent focus:border-blue-500 focus:bg-white outline-none font-medium"
+                                        placeholder="Search symptoms (e.g. chest pain, fever, abdominal pain)..."
+                                    />
+
+                                    <div className="max-h-64 md:max-h-72 overflow-y-auto pr-1">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                                            {COMMON_SYMPTOMS
+                                                .filter(s => s.toLowerCase().includes(symptomSearch.toLowerCase()))
+                                                .map(symptom => {
+                                                    const key = symptom.toLowerCase().replace(/[^a-z0-9]+/g, '_');
+                                                    const isSelected = patientData.selected_symptoms?.includes(symptom);
+
+                                                    // Keep legacy booleans in sync for the core 7 symptoms used in risk model
+                                                    const legacyUpdates = {};
+                                                    if (symptom.toLowerCase().includes('chest pain')) legacyUpdates.symptom_chest_pain = isSelected;
+                                                    if (symptom.toLowerCase() === 'fever') legacyUpdates.symptom_fever = isSelected;
+                                                    if (symptom.toLowerCase().includes('shortness of breath') || symptom.toLowerCase().includes('difficulty breathing')) legacyUpdates.symptom_breathing_difficulty = isSelected;
+                                                    if (symptom.toLowerCase() === 'cough') legacyUpdates.symptom_cough = isSelected;
+                                                    if (symptom.toLowerCase() === 'headache') legacyUpdates.symptom_headache = isSelected;
+                                                    if (symptom.toLowerCase() === 'dizziness') legacyUpdates.symptom_dizziness = isSelected;
+                                                    if (symptom.toLowerCase() === 'vomiting') legacyUpdates.symptom_vomiting = isSelected;
+
+                                                    return (
+                                                        <CustomCheckbox
+                                                            key={key}
+                                                            label={symptom}
+                                                            checked={!!isSelected}
+                                                            onChange={(checked) => {
+                                                                const current = patientData.selected_symptoms || [];
+                                                                const next = checked
+                                                                    ? [...current, symptom]
+                                                                    : current.filter(s => s !== symptom);
+                                                                updatePatientData({
+                                                                    selected_symptoms: next,
+                                                                    ...legacyUpdates,
+                                                                });
+                                                            }}
+                                                        />
+                                                    );
+                                                })}
+                                        </div>
+                                    </div>
                                 </div>
                                 <div className="pt-8 space-y-6">
                                     <div className="flex justify-between items-center">
@@ -169,13 +213,52 @@ const IntakeForm = () => {
                         {currentStep === 5 && (
                             <div className="space-y-8 animate-in fade-in duration-300">
                                 <StepTitle title={t('medical_history_title')} subtitle={t('medical_history_subtitle')} />
-                                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                    <CustomCheckbox label={t('diabetes')} checked={patientData.diabetes} onChange={(v) => updatePatientData({ diabetes: v })} />
-                                    <CustomCheckbox label={t('hypertension')} checked={patientData.hypertension} onChange={(v) => updatePatientData({ hypertension: v })} />
-                                    <CustomCheckbox label={t('heart_disease')} checked={patientData.heart_disease} onChange={(v) => updatePatientData({ heart_disease: v })} />
-                                    <CustomCheckbox label={t('asthma')} checked={patientData.asthma} onChange={(v) => updatePatientData({ asthma: v })} />
-                                    <CustomCheckbox label={t('pregnant')} checked={patientData.pregnant} onChange={(v) => updatePatientData({ pregnant: v })} />
-                                    <CustomCheckbox label={t('smoker')} checked={patientData.smoker} onChange={(v) => updatePatientData({ smoker: v })} />
+
+                                <div className="space-y-4">
+                                    <input
+                                        type="text"
+                                        value={diseaseSearch}
+                                        onChange={(e) => setDiseaseSearch(e.target.value)}
+                                        className="w-full text-base md:text-lg p-4 rounded-2xl bg-slate-50 border-2 border-transparent focus:border-blue-500 focus:bg-white outline-none font-medium"
+                                        placeholder="Search medical conditions (e.g. diabetes, asthma, kidney disease)..."
+                                    />
+
+                                    <div className="max-h-64 md:max-h-72 overflow-y-auto pr-1">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                                            {COMMON_DISEASES
+                                                .filter(d => d.toLowerCase().includes(diseaseSearch.toLowerCase()))
+                                                .map(disease => {
+                                                    const key = disease.toLowerCase().replace(/[^a-z0-9]+/g, '_');
+                                                    const isSelected = patientData.medical_history_list?.includes(disease);
+
+                                                    const legacyUpdates = {};
+                                                    if (disease.toLowerCase().startsWith('diabetes')) legacyUpdates.diabetes = isSelected;
+                                                    if (disease.toLowerCase().startsWith('hypertension')) legacyUpdates.hypertension = isSelected;
+                                                    if (disease.toLowerCase().includes('coronary artery disease') || disease.toLowerCase().includes('heart failure') || disease.toLowerCase().includes('heart attack')) legacyUpdates.heart_disease = isSelected;
+                                                    if (disease.toLowerCase().startsWith('asthma')) legacyUpdates.asthma = isSelected;
+                                                    if (disease.toLowerCase().includes('pregnancy')) legacyUpdates.pregnant = isSelected;
+                                                    if (disease.toLowerCase().includes('smoking') || disease.toLowerCase().includes('tobacco')) legacyUpdates.smoker = isSelected;
+
+                                                    return (
+                                                        <CustomCheckbox
+                                                            key={key}
+                                                            label={disease}
+                                                            checked={!!isSelected}
+                                                            onChange={(checked) => {
+                                                                const current = patientData.medical_history_list || [];
+                                                                const next = checked
+                                                                    ? [...current, disease]
+                                                                    : current.filter(d => d !== disease);
+                                                                updatePatientData({
+                                                                    medical_history_list: next,
+                                                                    ...legacyUpdates,
+                                                                });
+                                                            }}
+                                                        />
+                                                    );
+                                                })}
+                                        </div>
+                                    </div>
                                 </div>
                                 <div className="space-y-6 pt-4">
                                     <div className="grid md:grid-cols-2 gap-8">

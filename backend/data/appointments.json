@@ -87,5 +87,15 @@
     "patient_phone": "+919360733882",
     "status": "pending",
     "created_at": "2026-02-15T01:41:15.188Z"
+  },
+  {
+    "appointment_id": "APT1771654569019",
+    "patient_id": "P001",
+    "doctor_id": "D1",
+    "slot_time": "2026-02-25T08:30:00.000Z",
+    "branch": "Main Branch",
+    "patient_phone": "+919360733882",
+    "status": "pending",
+    "created_at": "2026-02-21T06:16:09.019Z"
   }
 ]

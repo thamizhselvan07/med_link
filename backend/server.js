@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
-const { initDB, db } = require('./config/db');
+const { connectDB, initDB } = require('./config/db');
 const killPort = require('kill-port');
 
 dotenv.config();
@@ -21,9 +21,6 @@ process.on("unhandledRejection", err => {
 // Middleware
 app.use(cors());
 app.use(express.json());
-
-// Set DB instance
-app.set('db', db);
 
 // Health Check Endpoint
 app.get("/health", (req, res) => {
@@ -54,24 +51,28 @@ app.get('/', (req, res) => {
     res.send('VoiceTriage AI API is running');
 });
 
-// Start Server with Port Handling
+// Start Server with Port Handling and MongoDB Connection
 async function startServer() {
     try {
+        // Connect to MongoDB
+        await connectDB();
+        
+        // Initialize database (seed if needed)
+        await initDB();
+        
         await killPort(PORT);
         console.log(`Old process on port ${PORT} terminated.`);
     } catch (e) {
-        console.log(`No process using port ${PORT}.`);
+        if (e.code === 'EACCES') {
+            console.log(`No process using port ${PORT} or permission denied.`);
+        } else {
+            console.log(`No process using port ${PORT}.`);
+        }
     }
 
     const server = app.listen(PORT, () => {
         console.log(`Server running on port ${PORT}`);
-        // Load Dataset / Init DB in background
-        console.log("Initializing database in background...");
-        initDB().then(() => {
-            console.log("Database initialized successfully.");
-        }).catch(err => {
-            console.error("Database initialization failed:", err);
-        });
+        console.log("MongoDB database connected and initialized.");
     });
 
     server.on("error", err => {

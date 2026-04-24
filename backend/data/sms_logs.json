@@ -1,5 +1,19 @@
 [
   {
+    "id": "SMS1771654569030_374",
+    "to": "+919360733882",
+    "patient_id": "P001",
+    "type": "appointment",
+    "message": "MedHub+: Appointment request sent to Dr. Priya Sharma for 25/2/2026, 2:00:00 pm. Pending confirmation.",
+    "scheduled_for": "2026-02-25T06:30:00.000Z",
+    "sent_at": "2026-02-21T06:16:09.030Z",
+    "status": "sent",
+    "provider": "demo",
+    "meta": {
+      "appointment_id": "APT1771654569019"
+    }
+  },
+  {
     "id": "SMS1771119675233_893",
     "to": "+919360733882",
     "patient_id": "P001",

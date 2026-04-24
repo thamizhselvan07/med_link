@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 
 const ResultScreen = () => {
-    const { analysisResult, resetPatientData } = usePatient();
+    const { analysisResult, patientData, resetPatientData } = usePatient();
     const { t } = useLanguage();
     const navigate = useNavigate();
 
@@ -28,6 +28,38 @@ const ResultScreen = () => {
     const handleDone = () => {
         resetPatientData();
         navigate('/patient/start');
+    };
+
+    const handleDownloadPdf = () => {
+        const content = `
+Medicare AI Triage Summary
+==========================
+
+Patient: ${patientData?.name || '-'} (${analysisResult.patient_id || '-'})
+Risk Level: ${analysisResult.risk_level}
+Priority Score: ${analysisResult.priority_score || analysisResult.emergency_score || '-'}
+Department: ${analysisResult.department}
+Doctor Assigned: ${analysisResult.doctor_assigned || '-'}
+
+AI Summary:
+${analysisResult.ai_summary || '-'}
+
+Primary Symptoms:
+${patientData?.symptoms || patientData?.transcribed_text || (patientData?.selected_symptoms || []).join(', ') || '-'}
+
+Medical History:
+${(patientData?.medical_history_list || []).join(', ') || '-'}
+`;
+
+        const blob = new Blob([content], { type: 'application/pdf' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `triage-summary-${analysisResult.patient_id || 'patient'}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
     };
 
     return (
@@ -52,10 +84,10 @@ const ResultScreen = () => {
 
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 relative z-10">
                         {[
-                            { labelKey: 'priority_score', val: `${analysisResult.priority_score}/100`, icon: ShieldCheck },
+                            { labelKey: 'priority_score', val: `${analysisResult.priority_score || analysisResult.emergency_score || 0}/100`, icon: ShieldCheck },
                             { labelKey: 'wait_time', val: '~15 mins', icon: Clock },
                             { labelKey: 'zone', val: analysisResult.department, icon: Activity },
-                            { labelKey: 'token', val: `#${analysisResult.patient_id?.split('-')[1] || '001'}`, icon: User }
+                            { labelKey: 'token', val: `#${(analysisResult.patient_id || patientData.patient_id || 'VT-0001').replace(/^VT-/, '')}`, icon: User }
                         ].map((stat, i) => (
                             <div key={i} className="bg-white/15 backdrop-blur-lg p-6 rounded-3xl border border-white/20 text-center">
                                 <stat.icon size={24} className="mx-auto mb-3 opacity-60" />
@@ -92,7 +124,10 @@ const ResultScreen = () => {
                         <button onClick={() => navigate('/patient/waiting')} className="bg-slate-900 text-white px-10 py-6 rounded-3xl shadow-xl font-black text-2xl flex items-center justify-center gap-4 hover:scale-[1.02] active:scale-95 transition-all group">
                             {t('go_to_queue')} <ArrowRight className="group-hover:translate-x-2 transition-transform" />
                         </button>
-                        <button className="flex items-center justify-center gap-2 text-slate-500 font-bold hover:text-blue-600 transition-colors py-2">
+                        <button
+                            onClick={handleDownloadPdf}
+                            className="flex items-center justify-center gap-2 text-slate-500 font-bold hover:text-blue-600 transition-colors py-2"
+                        >
                             <Download size={18} /> {t('download_pdf')}
                         </button>
                     </div>

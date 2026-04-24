@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 
 const ReviewSummary = () => {
-    const { patientData, setAnalysisResult } = usePatient();
+    const { patientData, setAnalysisResult, updatePatientData } = usePatient();
     const { t, translateText, language } = useLanguage();
     const navigate = useNavigate();
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -29,6 +29,11 @@ const ReviewSummary = () => {
             // STEP 2: Call AI engine
             const res = await axios.post('/analyze-patient', processedData);
             let analysis = res.data;
+
+            // Persist backend-generated token/id so Waiting & Result screens show correct value
+            if (analysis.patient_id) {
+                updatePatientData({ patient_id: analysis.patient_id });
+            }
 
             // STEP 3: Translate AI output back to UI language (Step 7)
             if (language !== 'en' && analysis.ai_analysis) {

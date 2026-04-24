@@ -269,14 +269,14 @@ const TriageQueuePage = () => {
                 </div>
 
                 {/* Main Content */}
-                <div className={`grid grid-cols-1 ${role === 'doctor' ? '' : 'lg:grid-cols-3'} gap-8`}>
-                    {/* Patient Queue List - Full Width if Doctor */}
-                    <div className={`${role === 'doctor' ? 'w-full' : 'lg:col-span-2'} space-y-6`}>
+                <div className={`grid grid-cols-1 ${role === 'doctor' ? 'lg:grid-cols-2' : 'lg:grid-cols-3'} gap-8 items-start`}>
+                    {/* Patient Queue List */}
+                    <div className={`${role === 'doctor' ? 'lg:col-span-2' : 'lg:col-span-2'} space-y-6`}>
                         {/* Critical */}
                         {queue.critical?.length > 0 && (
                             <div>
                                 <h2 className="text-2xl font-black text-red-600 mb-4 flex items-center gap-2"><AlertTriangle size={24} /> Critical Priority</h2>
-                                <div className={`grid grid-cols-1 ${role === 'doctor' ? 'md:grid-cols-3' : 'md:grid-cols-2'} gap-4`}>
+                                <div className={`grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4`}>
                                     {queue.critical.map(patient => <PatientCard key={patient.patient_id} patient={patient} category="critical" />)}
                                 </div>
                             </div>
@@ -285,7 +285,7 @@ const TriageQueuePage = () => {
                         {queue.medium?.length > 0 && (
                             <div>
                                 <h2 className="text-2xl font-black text-orange-600 mb-4 flex items-center gap-2"><Activity size={24} /> Medium Priority</h2>
-                                <div className={`grid grid-cols-1 ${role === 'doctor' ? 'md:grid-cols-3' : 'md:grid-cols-2'} gap-4`}>
+                                <div className={`grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4`}>
                                     {queue.medium.map(patient => <PatientCard key={patient.patient_id} patient={patient} category="medium" />)}
                                 </div>
                             </div>
@@ -294,7 +294,7 @@ const TriageQueuePage = () => {
                         {queue.low?.length > 0 && (
                             <div>
                                 <h2 className="text-2xl font-black text-emerald-600 mb-4 flex items-center gap-2"><CheckCircle size={24} /> Low Priority</h2>
-                                <div className={`grid grid-cols-1 ${role === 'doctor' ? 'md:grid-cols-3' : 'md:grid-cols-2'} gap-4`}>
+                                <div className={`grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4`}>
                                     {queue.low.map(patient => <PatientCard key={patient.patient_id} patient={patient} category="low" />)}
                                 </div>
                             </div>
@@ -310,7 +310,7 @@ const TriageQueuePage = () => {
                     {/* Right Panel: HIDDEN for Doctors */}
                     {role !== 'doctor' && (
                         <div className="lg:col-span-1">
-                            <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm sticky top-6">
+                            <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm lg:sticky lg:top-6 space-y-6">
                                 <h2 className="text-2xl font-black text-slate-900 mb-6">Book Doctor</h2>
 
                                 {selectedPatient ? (
