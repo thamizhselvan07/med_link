@@ -2,19 +2,10 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "framework": "vite",
-  "env": {
-    "VITE_API_URL": "@railway_backend_url"
-  },
   "regions": ["sfo1"],
   "functions": {
     "api/**": {
       "maxDuration": 30
     }
-  },
-  "redirects": [
-    {
-      "source": "/api/:path*",
-      "destination": "https://your-railway-backend.railway.app/api/:path*"
-    }
-  ]
+  }
 }
